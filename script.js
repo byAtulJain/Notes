@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -22,69 +22,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const addNoteBtn = document.getElementById('add-note-btn');
   const noteInput = document.getElementById('note-input');
   const notesContainer = document.getElementById('notes');
-  const loginBtn = document.getElementById('login-btn');
   const logoutBtn = document.getElementById('logout-btn');
   const userEmail = document.getElementById('user-email');
-  const loginModal = document.getElementById('login-modal');
-  const loginForm = document.getElementById('login-form');
-  const closeModalBtn = document.querySelector('.close');
 
   // Toggle dark mode
   themeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
   });
 
-  // Show/hide login modal
-  loginBtn.addEventListener('click', () => {
-    loginModal.style.display = 'block';
-  });
-
-  closeModalBtn.addEventListener('click', () => {
-    loginModal.style.display = 'none';
-  });
-
-  window.addEventListener('click', (event) => {
-    if (event.target === loginModal) {
-      loginModal.style.display = 'none';
-    }
-  });
-
-  // Handle login
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      loginModal.style.display = 'none';
-    } catch (error) {
-      alert('Error logging in:', error.message);
-    }
-  });
-
   // Handle logout
   logoutBtn.addEventListener('click', async () => {
     await signOut(auth);
+    window.location.href = 'login.html';
   });
 
   // Handle auth state changes
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-      userEmail.style.display = 'inline-block';
       userEmail.textContent = user.email;
       noteInput.disabled = false;
       addNoteBtn.disabled = false;
       renderNotes(user.uid);
     } else {
-      loginBtn.style.display = 'inline-block';
-      logoutBtn.style.display = 'none';
-      userEmail.style.display = 'none';
-      noteInput.disabled = true;
-      addNoteBtn.disabled = true;
-      notesContainer.innerHTML = '';
+      window.location.href = 'login.html';
     }
   });
 
